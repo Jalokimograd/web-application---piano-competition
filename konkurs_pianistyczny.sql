@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 16 Cze 2023, 07:43
+-- Czas generowania: 16 Cze 2023, 08:56
 -- Wersja serwera: 10.4.17-MariaDB
 -- Wersja PHP: 8.0.0
 
@@ -51,19 +51,28 @@ INSERT INTO `kompozytorzy` (`Id`, `Imie`, `Nazwisko`) VALUES
 
 CREATE TABLE `pianisci` (
   `Id` int(11) NOT NULL,
-  `Imie` varchar(50) NOT NULL,
-  `Nazwisko` varchar(50) NOT NULL,
+  `Imie` varchar(50) DEFAULT NULL,
+  `Nazwisko` varchar(50) DEFAULT NULL,
   `username` varchar(50) NOT NULL,
   `password` varchar(50) NOT NULL,
-  `password_hash` varchar(60) NOT NULL
+  `password_hash` varchar(60) NOT NULL,
+  `email` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Zrzut danych tabeli `pianisci`
 --
 
-INSERT INTO `pianisci` (`Id`, `Imie`, `Nazwisko`, `username`, `password`, `password_hash`) VALUES
-(2, 'Adam', 'Małysz', 'Adam', 'Małamysz', '$2y$10$cfXJUmZjU9Xkv/pMzwcovuAdJucEJV4leMAcQbxnZmel60FLm/NV2');
+INSERT INTO `pianisci` (`Id`, `Imie`, `Nazwisko`, `username`, `password`, `password_hash`, `email`) VALUES
+(2, 'Adam', 'Małysz', 'Adam', 'Małamysz', '$2y$10$cfXJUmZjU9Xkv/pMzwcovuAdJucEJV4leMAcQbxnZmel60FLm/NV2', 'małamysz@gmail.com'),
+(3, 'Czesław', 'Małamyszyński', 'czeslaw', 'zaq', '$2y$10$sDQqhM2RKnrYlG3b3lnV0uvP/wvCYeBpovursMtvnsZ/zwkIOAFPW', 'czeslaw@gmail.com'),
+(4, 'Sułtan', 'Kosmitów', 'otyly_pan', 'zxcv', '$2y$10$ixvtmfYTeF53JCtOyZrm/OLEPeAX8kezD4T.rX.gQDdCmJLQkpVPS', 'otyly_pan@o2.pl'),
+(7, NULL, NULL, 'aaa', 'aaa', '$2y$10$xx/A32RBaZeeEh4B.QUTs.wMxc9.iWz.KlStMhADN8OwBShiYCRBK', 'aaa@gmail.com'),
+(8, NULL, NULL, 'ccc', 'ccc', '$2y$10$.WUwotXv9LdDZcksrGAd9eW1SgcWyU3h3njhgoCUbh8osfs9XZz5u', 'ccc@gmail.com'),
+(9, NULL, NULL, 'dsdas', 'sdadas', '$2y$10$Uyj99EFcQJsxbQpNfHsqe.bXCTDHk36a0uAc5isun1vVSCTidEfBy', 'dsadas@o2.pl'),
+(10, NULL, NULL, 'dasdas', 'dasdasdas', '$2y$10$VTS1bxNIP5qdVsSPVzLgQefwCOPRSFrozsqCJZK4zX3KOhKeXKvd.', 'dasdas@o2.pl'),
+(11, NULL, NULL, 'saas', 'asasas', '$2y$10$lbS9j4asyYOQK411y1gOA.Y5OMR/kxpwlh.VR.2tdT6wc2Y66dQim', 'asas@o2.pl'),
+(12, NULL, NULL, 'dew', 'dasdasdas', '$2y$10$47XyWIbfpACXwbxsWVkfauy0CqGdxVcWr8rO54I3NFB66imdVOWfW', 'dasas@o2.pl');
 
 -- --------------------------------------------------------
 
@@ -165,7 +174,7 @@ ALTER TABLE `kompozytorzy`
 -- AUTO_INCREMENT dla tabeli `pianisci`
 --
 ALTER TABLE `pianisci`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT dla tabeli `pracownicy`
