@@ -1,4 +1,5 @@
 <?php
+    session_start();
     require_once "connect.php";
 
 
@@ -35,11 +36,13 @@
             if (password_verify($_POST['password'], $password_hash)) {
                 // Verification success! User has logged-in!
                 // Create sessions, so we know the user is logged in, they basically act like cookies but remember the data on the server.
-                session_regenerate_id();
+                // session_regenerate_id();
                 $_SESSION['loggedin'] = TRUE;
                 $_SESSION['name'] = $_POST['username'];
                 $_SESSION['id'] = $id;
                 echo 'Welcome ' . $_SESSION['name'] . '!';
+
+                header('Location: home.php');
             } else {
                 // Incorrect password
                 echo 'Incorrect username and/or password!';
@@ -49,6 +52,6 @@
             echo 'Incorrect username and/or password!';
         }
 
-        $stmt->close();
     }
+    $conn->close();
 ?>
