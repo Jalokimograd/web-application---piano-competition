@@ -1,0 +1,43 @@
+select {
+    appearance: none;
+    background-color: transparent;
+    border: none;
+    padding: 0 1em 0 0;
+    margin: 0;
+    width: 100%;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: inherit;
+    line-height: inherit;
+    z-index: 1;
+    outline: none;
+}
+
+.select {
+    display: grid;
+    grid-template-areas: "select";
+    align-items: center;
+    position: relative;
+    min-width: 15ch;
+    max-width: 30ch;
+    border: 1px solid var(--select-border);
+    border-radius: 0.25em;
+    padding: 0.25em 0.5em;
+    font-size: 1.25rem;
+    cursor: pointer;
+    line-height: 1.1;
+    background-color: #fff;
+    background-image: linear-gradient(to top, #f9f9f9, #fff 33%);
+}
+
+select[multiple] {
+    padding-right: 0;
+    /* * Safari will not reveal an option * unless the select height has room to * show all of it * Firefox and Chrome allow showing * a partial option */
+    height: 6rem;
+    /* * Experimental - styling of selected options * in the multiselect * Not supported crossbrowser */
+}
+
+select[multiple] option {
+    white-space: normal;
+    outline-color: var(--select-focus);
+}

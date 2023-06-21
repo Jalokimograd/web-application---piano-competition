@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300&display=swap');
 
-
 * {
     margin: 0;
     padding: 0;
@@ -85,7 +84,7 @@ header {
 }
 
 .wrapper {
-    position: relative;
+    position: fixed;
     width: 400px;
     height: 440px;
     background: transparent;
@@ -102,12 +101,16 @@ header {
     opacity: 0;
 }
 
-.wrapper.db-schema {
+.wrapper#DBSchema-popup {
     width: 1000px;
     height: 600px;
-    position: fixed;
 }
 
+.wrapper.composers {
+    width: 1000px;
+    height: 600px;
+    align-items: normal;
+}
 
 .wrapper.active-popup {
     transform: scale(1);
@@ -115,7 +118,7 @@ header {
 }
 
 .wrapper.active {
-    height: 520px;
+    height: 670px;
 }
 
 .wrapper .from-box {

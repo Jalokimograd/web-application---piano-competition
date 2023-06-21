@@ -15,7 +15,7 @@ if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin']==true)) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Strona konkursu Pianistycznego</title>
-    <link rel="stylesheet" href="style.scss">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -66,6 +66,16 @@ if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin']==true)) {
                     <label>Username</label>
                 </div>
                 <div class="input-box">
+                    <span class="icon"><ion-icon name="person"></ion-icon></span>
+                    <input type="text" name="name" required>
+                    <label>Name</label>
+                </div>
+                <div class="input-box">
+                    <span class="icon"><ion-icon name="person"></ion-icon></span>
+                    <input type="text" name="surname" required>
+                    <label>Surname</label>
+                </div>
+                <div class="input-box">
                     <span class="icon"><ion-icon name="mail"></ion-icon></span>
                     <input type="email" name="email" required>
                     <label>Email</label>
@@ -87,7 +97,7 @@ if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin']==true)) {
         </div>
     </div>
 
-    <div id="DBSchema-popup" class="wrapper db-schema">
+    <div id="DBSchema-popup" class="wrapper">
         <span id="DBSchemaPopup-close" class="icon-close"><ion-icon name="close"></ion-icon></span>
         <h2>Login</h2>
 

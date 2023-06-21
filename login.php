@@ -4,12 +4,17 @@
 
 
     // Create connection
-    $conn = @new mysqli($host, $db_user, $db_pawword, $db_name);
-    //pg_connect(string $connection_string, int $flags = 0): PgSql\Connection|false
+    //$conn = @new mysqli($host, $db_user, $db_password, $db_name);
+
+    $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_password port=$db_port";
+    // echo $connecting_string;
+    $conn = pg_connect($connecting_string);
+
+    // echo $conn;
 
     // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+    if (!$conn) {
+        die("Connection failed");
     }
     echo "Connected successfully";
 
@@ -21,37 +26,54 @@
     }
 
     // Prepare our SQL, preparing the SQL statement will prevent SQL injection.
-    if ($stmt = $conn->prepare('SELECT id, password_hash FROM pianisci WHERE username = ?')) {
-        // Bind parameters (s = string, i = int, b = blob, etc), in our case the username is a string so we use "s"
-        $stmt->bind_param('s', $_POST['username']);
-        $stmt->execute();
-        // Store the result so we can check if the account exists in the database.
-        $stmt->store_result();
 
-        if ($stmt->num_rows > 0) {
-            $stmt->bind_result($id, $password_hash);
-            $stmt->fetch();
-            // Account exists, now we verify the password.
-            // Note: remember to use password_hash in your registration file to store the hashed passwords.
-            if (password_verify($_POST['password'], $password_hash)) {
-                // Verification success! User has logged-in!
-                // Create sessions, so we know the user is logged in, they basically act like cookies but remember the data on the server.
-                // session_regenerate_id();
-                $_SESSION['loggedin'] = TRUE;
-                $_SESSION['name'] = $_POST['username'];
-                $_SESSION['id'] = $id;
-                echo 'Welcome ' . $_SESSION['name'] . '!';
+    $stmt = pg_query_params($conn,
+                         "SELECT id, password_hash, imie, nazwisko, email FROM pianisci WHERE username = $1",
+                         array($_POST['username']));
+    $access_level = 1;
 
-                header('Location: home.php');
-            } else {
-                // Incorrect password
-                echo 'Incorrect username and/or password!';
-            }
-        } else {
-            // Incorrect username
-            echo 'Incorrect username and/or password!';
-        }
-
+    if (pg_num_rows($stmt) == 0){
+        $stmt = pg_query_params($conn,
+            "SELECT id, password_hash, imie, nazwisko, email FROM pracownicy WHERE username = $1",
+            array($_POST['username']));
+            $access_level = 2;
     }
-    $conn->close();
+
+
+
+
+    if (pg_num_rows($stmt) > 0) {
+        $row = pg_fetch_array($stmt, 0);
+
+        $id = $row['id'];
+        $password_hash = $row['password_hash'];
+        $name = $row['name'];
+        $surname = $row['surname'];
+        $email = $row['email'];
+
+
+        if (password_verify($_POST['password'], $password_hash)) {
+            $_SESSION['loggedin'] = TRUE;
+            $_SESSION['access_level'] = $access_level;
+            $_SESSION['username'] = $_POST['username'];
+            $_SESSION['id'] = $id;
+            $_SESSION['name'] = $name;
+            $_SESSION['surname'] = $surname;
+            $_SESSION['email'] = $email;
+
+            echo 'Welcome ' . $_SESSION['username'] . '!';
+
+            header('Location: home.php');
+        } else {
+            // Incorrect password
+            echo 'Incorrect username and/or password!';
+            header('refresh:2;url= index.php');
+        }
+    } else {
+        // Incorrect username
+        echo 'Incorrect username and/or password!';
+        header('refresh:2;url= index.php');
+    }
+    pg_close($conn);
+    //$conn->close();
 ?>
