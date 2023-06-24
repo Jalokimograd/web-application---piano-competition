@@ -30,7 +30,7 @@ if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin']==true)) {
 
     </header>
 
-    <div class="wrapper">
+    <div id="login-popup" class="wrapper">
         <span id="LoginPopup-close" class="icon-close"><ion-icon name="close"></ion-icon></span>
         <div class="from-box login">
             <h2>Login</h2>
@@ -51,7 +51,7 @@ if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin']==true)) {
                     <a href="#">Forgot Password?</a>
                 </div>
                 <button type="submit" class="btn">Login</button>
-                <div class="login-register">
+                <div class="login-register text_button">
                     <p>Don't have an account? <a href="#" class="register-link">Register</a></p>
                 </div>
             </form>
@@ -90,7 +90,7 @@ if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin']==true)) {
                         I agree to the terms & conditions</label>
                 </div>
                 <button type="submit" class="btn">Register</button>
-                <div class="login-register">
+                <div class="login-register text_button">
                     <p>Already have an account? <a href="#" class="login-link">Login</a></p>
                 </div>
             </form>

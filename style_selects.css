@@ -41,3 +41,33 @@ select[multiple] option {
     white-space: normal;
     outline-color: var(--select-focus);
 }
+
+.scrollable {
+    max-height: 300px;
+    max-width: 430px;
+    width: 430px;
+    overflow: auto;
+    margin-top: 10px;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    border: 2px solid rgba(255, 255, 255, .5);
+    border-radius: 20px;
+}
+
+td {
+    padding: 8px;
+}
+
+th {
+    padding: 8px;
+    color: #162938;
+}
+
+tr {
+    color: #fff;
+    text-align: center;
+}

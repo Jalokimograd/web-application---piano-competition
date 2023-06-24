@@ -42,3 +42,29 @@ btns_names.forEach(item => {
     });
 })
 
+const loginLink = document.querySelector('.login-link');
+const registerLink = document.querySelector('.register-link');
+
+
+const modes_names = [];
+modes_names.push({ popup: "songs", change_to_mode1_button: ".addNewSong-link", change_to_mode2_button: ".listOfSongs-link" });
+modes_names.push({ popup: "composers", change_to_mode1_button: ".addNewComposer-link", change_to_mode2_button: ".listOfComposers-link" });
+
+modes_names.forEach(item => {
+    // bierzyemy uchwyt do wyskakującego okienka
+    const actualPopup = document.getElementById(item["popup"]);
+
+    const mode1Button = actualPopup.querySelector(item["change_to_mode1_button"]);
+    const mode2Button = actualPopup.querySelector(item["change_to_mode2_button"]);
+
+    if (actualPopup == null || mode1Button == null || mode2Button == null)
+        return;
+
+    mode1Button.addEventListener('click', () => {
+        actualPopup.classList.add('active');
+    });
+
+    mode2Button.addEventListener('click', () => {
+        actualPopup.classList.remove('active');
+    });
+})
