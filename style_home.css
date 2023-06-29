@@ -35,6 +35,22 @@
     transform: translateX(0);
 }
 
+.wrapper.active2 .from-box.mode1 {
+    transition: none;
+    transform: translateX(-500px);
+}
+
+.wrapper .from-box.mode3 {
+    position: absolute;
+    transition: none;
+    transform: translateX(500px);
+}
+
+.wrapper.active2 .from-box.mode3 {
+    transition: transform .18s ease;
+    transform: translateX(0);
+}
+
 .wrapper#songs {
     height: 450px;
     width: 500px;

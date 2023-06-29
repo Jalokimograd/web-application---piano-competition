@@ -50,9 +50,10 @@ const registerLink = document.querySelector('.register-link');
 
 
 const modes_names = [];
-modes_names.push({ popup: "songs", change_to_mode1_button: ".addNewSong-link", change_to_mode2_button: ".listOfSongs-link" });
-modes_names.push({ popup: "composers", change_to_mode1_button: ".addNewComposer-link", change_to_mode2_button: ".listOfComposers-link" });
-modes_names.push({ popup: "myPerformances", change_to_mode1_button: ".addNewPerformance-link", change_to_mode2_button: ".listOfMyPerformances-link" });
+modes_names.push({ popup: "songs", change_mode_button: "addNewSong-link", return_button: "listOfSongs-link", mode_name: "active" });
+modes_names.push({ popup: "composers", change_mode_button: "addNewComposer-link", return_button: "listOfComposers-link", mode_name: "active" });
+modes_names.push({ popup: "myPerformances", change_mode_button: "addNewPerformance-link", return_button: "listOfMyPerformances-link", mode_name: "active" });
+modes_names.push({ popup: "myPerformances", change_mode_button: "deletePerformance-link", return_button: "listOfMyPerformances2-link", mode_name: "active2" });
 
 modes_names.forEach(item => {
     // bierzyemy uchwyt do wyskakującego okienka
@@ -60,17 +61,18 @@ modes_names.forEach(item => {
     if (actualPopup == null)
         return;
 
-    const mode1Button = actualPopup.querySelector(item["change_to_mode1_button"]);
-    const mode2Button = actualPopup.querySelector(item["change_to_mode2_button"]);
+    const change_mode_button = document.getElementById(item["change_mode_button"]);
+    const return_button = document.getElementById(item["return_button"]);
+    const modeName = item["mode_name"];
 
-    if (mode1Button == null || mode2Button == null)
+    if (change_mode_button == null || return_button == null)
         return;
 
-    mode1Button.addEventListener('click', () => {
-        actualPopup.classList.add('active');
+    change_mode_button.addEventListener('click', () => {
+        actualPopup.classList.add(modeName);
     });
 
-    mode2Button.addEventListener('click', () => {
-        actualPopup.classList.remove('active');
+    return_button.addEventListener('click', () => {
+        actualPopup.classList.remove(modeName);
     });
 })

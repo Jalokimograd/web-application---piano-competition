@@ -18,21 +18,27 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
     $composers = pg_query($conn,
                          "SELECT * FROM kompozytorzy");
 	$songs = pg_query($conn,
-                         "SELECT u.id as u_id, tytul, imie, nazwisko, kompozytor_id from utwory as u JOIN kompozytorzy as k ON u.kompozytor_id=k.id");
+                         "SELECT u.id as u_id, tytul, imie, nazwisko, kompozytor_id 
+						 	FROM utwory as u JOIN kompozytorzy as k ON u.kompozytor_id=k.id");
 	
 	if($_SESSION['access_level'] == 1) {
 		$myPerformances = pg_query_params($conn,
-				"SELECT * FROM wykonania as w JOIN utwory as u ON w.utwory_id=u.id WHERE w.pianisci_id = $1",
+				"SELECT w.id as w_id, ocena, zaakceptowany, wykonany, harmonogram, tytul 
+					FROM wykonania as w JOIN utwory as u ON w.utwory_id=u.id 
+					WHERE w.pianisci_id = $1",
 				array($_SESSION['id']));
 
 		// lista utworów kóre mogę jeszcze dopisać do swojego wystąpienia
 		$availableSongs = pg_query_params($conn,
-				"SELECT u.id as u_id, tytul, imie, nazwisko, kompozytor_id from utwory as u JOIN kompozytorzy as k ON u.kompozytor_id=k.id WHERE k.id NOT IN (SELECT u.kompozytor_id FROM wykonania as w JOIN utwory as u ON w.utwory_id=u.id WHERE w.pianisci_id = $1)",
+				"SELECT u.id as u_id, tytul, imie, nazwisko, kompozytor_id 
+					FROM utwory as u JOIN kompozytorzy as k ON u.kompozytor_id=k.id 
+					WHERE k.id NOT IN (SELECT u.kompozytor_id FROM wykonania as w JOIN utwory as u ON w.utwory_id=u.id WHERE w.pianisci_id = $1)",
 				array($_SESSION['id']));
 	}
 
 	$allPerformances = pg_query($conn,
-				"SELECT w.id as w_id, ocena, harmonogram, p.imie as pianista_imie, p.nazwisko as pianista_nazwisko, tytul  FROM wykonania as w JOIN pianisci as p ON w.pianisci_id=p.id JOIN utwory as u ON w.utwory_id=u.id");
+				"SELECT w.id as w_id, ocena, harmonogram, p.imie as pianista_imie, p.nazwisko as pianista_nazwisko, tytul 
+					FROM wykonania as w JOIN pianisci as p ON w.pianisci_id=p.id JOIN utwory as u ON w.utwory_id=u.id");
 
 ?>
 
@@ -127,6 +133,7 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 									<th>Rate</th>
 									<th>Schedule</th>
 									<th>Accepted</th>
+									<th>Performed</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -142,6 +149,7 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 									<td> '.$row["ocena"].' </td>
 									<td> '.$row["harmonogram"].' </td>
 									<td> '.$row["zaakceptowany"].' </td>
+									<td> '.$row["wykonany"].' </td>
 								</tr>';
 			}
 			echo 			'</tbody>';
@@ -150,17 +158,21 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 						</table>
 					</div>
 					<div class="text_button">
-						<p><a href="#" class="addNewPerformance-link">Add New Performance</a></p>
+						<p><a href="#" id="addNewPerformance-link">Add New Performance</a></p>
 					</div>
+					<div class="text_button">
+						<p><a href="#" id="deletePerformance-link">Delete existing Performance</a></p>
+					</div>
+
 				</div>
 			EOL;
 
 			echo <<<EOL
 				<div class="from-box mode2">
-				<h2>Add new performance</h2>
-				<form action="add_new_performance.php" method="post">
-					<div class="input-box">
-						<span class="icon"><ion-icon name="arrow-down-circle"></ion-icon></span>
+					<h2>Add new performance</h2>
+					<form action="add_new_performance.php" method="post">
+						<div class="input-box">
+							<span class="icon"><ion-icon name="arrow-down-circle"></ion-icon></span>
 
 			EOL;
 			if(pg_numrows($myPerformances) >= 3){
@@ -192,11 +204,52 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 				echo '<button type="submit" class="btn">Add song</button>';
 			}
 
-			echo '	<div class="text_button">
-						<p><a href="#" class="listOfMyPerformances-link">My performances list</a></p>
-					</div>
-				</form>
-				</div>';
+				echo '	<div class="text_button">
+							<p><a href="#" id="listOfMyPerformances-link">My performances list</a></p>
+						</div>
+					</form>
+					</div>';
+
+
+			echo <<<EOL
+					<div class="from-box mode3">
+						<h2>Delete Performance</h2>
+						<form action="delete_performance.php" method="post">
+							<table border="1" align=center>
+								<thead>
+									<tr>
+										<th>Song Title</th>
+										<th>Accepted</th>
+										<th>Delete?</th>
+									</tr>
+								</thead>
+
+								<tbody>
+			EOL;
+					
+			for($i=0; $i<pg_numrows($myPerformances); $i++) {
+				$row = pg_fetch_array($myPerformances, $i);
+					echo '
+									<tr>
+										<td> '.$row["tytul"].' </td>
+										<td> '.$row["zaakceptowany"].' </td>';
+				if($row["zaakceptowany"] == 'f'){
+					echo '				<td><input type="checkbox" name="selected_ids[]" value="'.$row["w_id"].'"></td>';
+				}
+				else{
+					echo '				<td><ion-icon title="You cant delete accepted performance" name="ban-outline"></ion-icon></td>';
+				}				
+
+				echo'				</tr>';
+			}
+			echo '				</tbody>
+							</table>
+							<button type="submit" class="btn">Delete Performances</button>
+						</form>
+						<div class="text_button">
+							<p><a href="#" id="listOfMyPerformances2-link">My performances list</a></p>
+						</div>
+					</div>';
 
 			echo "</div>";
 		}
@@ -209,29 +262,33 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 					<h2>Composers</h2>
 					<div class="scrollable">
 						<table border="1" align=center>
-							<tr>
-								<th>Composer Id</th>
-								<th>Name</th>
-								<th>Surname</th>
-							</tr>
+							<thead>
+								<tr>
+									<th>Composer Id</th>
+									<th>Name</th>
+									<th>Surname</th>
+								</tr>
+							</thead>
+							<tbody>
 			EOL;
 
 			for($i=0; $i<pg_numrows($composers); $i++) {
 				$row = pg_fetch_array($composers, $i);
 
 					echo '
-						<tr>
-							<td> '.$row["id"].' </td>
-							<td> '.$row["imie"].' </td>
-							<td> '.$row["nazwisko"].' </td>
-						</tr>';
+								<tr>
+									<td> '.$row["id"].' </td>
+									<td> '.$row["imie"].' </td>
+									<td> '.$row["nazwisko"].' </td>
+								</tr>';
 			}
 			
 			echo <<<EOL
+							<tbody>
 						</table>
 					</div>
 					<div class="text_button">
-						<p><a href="#" class="addNewComposer-link">Add New Composer</a></p>
+						<p><a href="#" id="addNewComposer-link">Add New Composer</a></p>
 					</div>
 				</div>
 			EOL;
@@ -252,7 +309,7 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 						</div>
 						<button type="submit" class="btn">Add Composer</button>
 						<div class="text_button">
-							<p><a href="#" class="listOfComposers-link">Composers list</a></p>
+							<p><a href="#" id="listOfComposers-link">Composers list</a></p>
 						</div>
 					</form>
 				</div>
@@ -269,13 +326,15 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 					<h2>Songs</h2>
 					<div class="scrollable">
 						<table border="1" align=center>
-						<tr>
-							<th>Title</th>
-							<th>Song Id</th>
-							<th>Composer</th>
-							<th>Composer Id</th>
-						</tr>
-
+						<thead>
+							<tr>
+								<th>Title</th>
+								<th>Song Id</th>
+								<th>Composer</th>
+								<th>Composer Id</th>
+							</tr>
+						</thead>
+						<tbody>
 
 			EOL;
 
@@ -283,22 +342,23 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 				$row = pg_fetch_array($songs, $i);
 
 				echo '
-					<tr>
-						<td> '.$row["tytul"].' </td>
-						<td> '.$row["u_id"].' </td>
-						<td> '.$row["imie"].' '.$row["nazwisko"].'  </td>
-						<td> '.$row["kompozytor_id"].' </td>
-					</tr>';
+								<tr>
+									<td> '.$row["tytul"].' </td>
+									<td> '.$row["u_id"].' </td>
+									<td> '.$row["imie"].' '.$row["nazwisko"].'  </td>
+									<td> '.$row["kompozytor_id"].' </td>
+								</tr>';
 			}
 
 			
 			echo <<<EOL
-						</table>
-					</div>
-					<div class="text_button">
-						<p><a href="#" class="addNewSong-link">Add New Song</a></p>
-					</div>
+						</tbody>
+					</table>
 				</div>
+				<div class="text_button">
+					<p><a href="#" id="addNewSong-link">Add New Song</a></p>
+				</div>
+			</div>
 			EOL;
 
 			echo <<<EOL
@@ -315,6 +375,7 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 
 						<select name="composer_id">
 							<optgroup>
+							<option disabled selected>   </option>
 			EOL;
 
 			for($i=0; $i < pg_numrows($composers); $i++) { 
@@ -328,7 +389,7 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 					</div>
 					<button type="submit" class="btn">Add song</button>
 					<div class="text_button">
-						<p><a href="#" class="listOfSongs-link">Songs list</a></p>
+						<p><a href="#" id="listOfSongs-link">Songs list</a></p>
 					</div>
 				</form>
 				</div>';
@@ -339,17 +400,54 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 		//===================================================================================================================== Settings
 
 		if($_SESSION['access_level'] == 2) {
+			$competition = pg_query($conn,
+                         "SELECT * FROM konkurs Limit 1");
+			$row = pg_fetch_array($competition, 0);
+
 			echo <<<EOL
 			<div id="settings" class="wrapper">
 				<span class="icon-close"><ion-icon name="close"></ion-icon></span>
 				<div class="from-box mode1">
-					<h2>Settings</h2>
+					<h2>Competition settings</h2>
+					<table border="1" align=center>
+						<thead>
+							<tr>
+								<th>end date</th>
+								<th>are submissions open?</th>
+								<th>is it finished?</th>
+							</tr>
+						</thead>
+						<tbody>
+			EOL;
+
+			echo '
+							<tr>
+								<td> '.$row["data_zakonczenia"].' </td>
+								<td> '.$row["zgloszenia_otwarte"].' </td>
+								<td> '.$row["zakonczony"].' </td>
+							</tr>';								
+			echo <<<EOL
+	
+						</tbody>
+					</thead>
+					</table>
+
 				</div>
+
+				<div class="from-box mode2">
+				<h2>Settings</h2>
+				<form action="settings.php" method="post">
+					<label for="data">The end of the competition: </label>
+					<input type="datetime-local" id="data" name="data">
+					<button type="submit" class="btn">Set</button>
+				</form>
+
+			</div>
 			</div>
 			EOL;
 		}
 		?>
-		<script src="home_script.js"></script>
+		<script src="interactive_buttons_script.js"></script>
 		<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     	<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 	</body>
