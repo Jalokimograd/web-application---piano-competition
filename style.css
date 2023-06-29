@@ -95,7 +95,7 @@ header {
     align-items: center;
     overflow: hidden;
     transform: scale(0);
-    transition: transform .5s ease, opacity .4s ease, height .2s ease, width .2s ease;
+    transition: transform .5s ease, opacity .4s ease, height .2s ease, max-height 0.2s ease, width .2s ease;
     opacity: 0;
 }
 
@@ -286,4 +286,8 @@ header {
 
 .text_button p a:hover {
     text-decoration: underline;
+}
+
+p.warning {
+    color: #950101;
 }

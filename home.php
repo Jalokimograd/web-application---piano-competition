@@ -19,7 +19,20 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
                          "SELECT * FROM kompozytorzy");
 	$songs = pg_query($conn,
                          "SELECT u.id as u_id, tytul, imie, nazwisko, kompozytor_id from utwory as u JOIN kompozytorzy as k ON u.kompozytor_id=k.id");
+	
+	if($_SESSION['access_level'] == 1) {
+		$myPerformances = pg_query_params($conn,
+				"SELECT * FROM wykonania as w JOIN utwory as u ON w.utwory_id=u.id WHERE w.pianisci_id = $1",
+				array($_SESSION['id']));
 
+		// lista utworów kóre mogę jeszcze dopisać do swojego wystąpienia
+		$availableSongs = pg_query_params($conn,
+				"SELECT u.id as u_id, tytul, imie, nazwisko, kompozytor_id from utwory as u JOIN kompozytorzy as k ON u.kompozytor_id=k.id WHERE k.id NOT IN (SELECT u.kompozytor_id FROM wykonania as w JOIN utwory as u ON w.utwory_id=u.id WHERE w.pianisci_id = $1)",
+				array($_SESSION['id']));
+	}
+
+	$allPerformances = pg_query($conn,
+				"SELECT w.id as w_id, ocena, harmonogram, p.imie as pianista_imie, p.nazwisko as pianista_nazwisko, tytul  FROM wykonania as w JOIN pianisci as p ON w.pianisci_id=p.id JOIN utwory as u ON w.utwory_id=u.id");
 
 ?>
 
@@ -38,17 +51,17 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 		<header>
 			<h2 class="logo">Welcome <?=$_SESSION['username']?>!</h2>
 			<nav class="navigation">
-				<a id="btnResults-popup" href="#">Results</a>
-				<a id="btnSchedule-popup" href="#">Schedule</a>
+				<a id="btnPerformances-popup" href="#">All Performances</a>
 				
 				<?php
 					if($_SESSION['access_level'] == 1){
-						echo '<a id="btnMyPerformance-popup" href="#">My performance</a>';
+						echo '<a id="btnMyPerformances-popup" href="#">My performance</a>';
 					}
 
 					if($_SESSION['access_level'] == 2){
 						echo '<a id="btnComposers-popup" href="#">Composers</a>';
 						echo '<a id="btnSongs-popup" href="#">Songs</a>';
+						echo '<a id="btnSettings-popup" href="#">Settings</a>';
 					}
 				?>
 				<a href="logout.php">Logout</a>
@@ -57,56 +70,137 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 		</header>
 		
 		<?php
-		if($_SESSION['access_level'] == 2 || $_SESSION['access_level'] == 1) {
-			echo <<<EOL
-			<div id="results" class="wrapper">
-				<span class="icon-close"><ion-icon name="close"></ion-icon></span>
-				<div class="from-box mode1">
-					<h2>Results</h2>
-				</div>
-			</div>
-			EOL;
-		}
+		//===================================================================================================================== Performances
 
 		if($_SESSION['access_level'] == 2 || $_SESSION['access_level'] == 1) {
 			echo <<<EOL
-			<div id="schedule" class="wrapper">
+			<div id="performances" class="wrapper">
 				<span class="icon-close"><ion-icon name="close"></ion-icon></span>
 				<div class="from-box mode1">
-					<h2>Schedule</h2>
-					<div style="overflow-x:auto;">
-						<table>
-							
+					<h2>All performances</h2>
+					<div class="scrollable">
+						<table border="1" align=center>
+							<thead>
+								<tr>
+									<th>Schedule</th>
+									<th>Song Title</th>
+									<th>Pianist</th>
+									<th>Rating</th>
+								</tr>
+							</thead>
+
+							<tbody>
+			EOL;
+
+			for($i=0; $i<pg_numrows($allPerformances); $i++) {
+				$row = pg_fetch_array($allPerformances, $i);
+
+				echo '
+								<tr>
+									<td> '.$row["harmonogram"].' </td>
+									<td> '.$row["tytul"].' </td>
+									<td> '.$row["pianista_imie"].' '.$row["pianista_nazwisko"].'</td>
+									<td> '.$row["ocena"].' </td>
+								</tr>';
+			}
+
+			echo '	
+							</tbody>
 						</table>
 					</div>
 				</div>
-			</div>
-			EOL;
+			</div>';
 		}
+		//===================================================================================================================== MY PERFORMANCES
 
-		if($_SESSION['access_level'] == 1) {
+		if($_SESSION['access_level'] == 1) {			
 			echo <<<EOL
-			<div id="myPerformance" class="wrapper">
+			<div id="myPerformances" class="wrapper">
 				<span class="icon-close"><ion-icon name="close"></ion-icon></span>
 				<div class="from-box mode1">
-					<h2>My Performance</h2>
-					<label for="multi-select">List of composers</label>
-					<div class="select select--multiple">
-						<select id="multi-select" multiple>
-							<option value="Option 1">Option 1</option>
-							<option value="Option 2">Option 2</option>
-							<option value="Option 3">Option 3</option>
-							<option value="Option 4">Option 4</option>
-							<option value="Option 5">Option 5</option>
-							<option value="Option length">Option that has too long of a value to fit</option>
-						</select>
-					<span class="focus"></span>
+					<h2>My Performances</h2>
+					<div class="scrollable">
+						<table border="1" align=center>
+							<thead>
+								<tr>
+									<th>Song Title</th>
+									<th>Rate</th>
+									<th>Schedule</th>
+									<th>Accepted</th>
+								</tr>
+							</thead>
+							<tbody>
+
+			EOL;
+
+			for($i=0; $i<pg_numrows($myPerformances); $i++) {
+				$row = pg_fetch_array($myPerformances, $i);
+
+				echo '
+								<tr>
+									<td> '.$row["tytul"].' </td>
+									<td> '.$row["ocena"].' </td>
+									<td> '.$row["harmonogram"].' </td>
+									<td> '.$row["zaakceptowany"].' </td>
+								</tr>';
+			}
+			echo 			'</tbody>';
+
+			echo <<<EOL
+						</table>
+					</div>
+					<div class="text_button">
+						<p><a href="#" class="addNewPerformance-link">Add New Performance</a></p>
 					</div>
 				</div>
-			</div>
 			EOL;
-		}
 
+			echo <<<EOL
+				<div class="from-box mode2">
+				<h2>Add new performance</h2>
+				<form action="add_new_performance.php" method="post">
+					<div class="input-box">
+						<span class="icon"><ion-icon name="arrow-down-circle"></ion-icon></span>
+
+			EOL;
+			if(pg_numrows($myPerformances) >= 3){
+				echo '<select name="song_id" disabled>';
+			}
+			else {
+				echo '<select name="song_id">';
+			}
+			
+			echo <<<EOL
+							<optgroup>
+							<option disabled selected>   </option>
+			EOL;
+
+			for($i=0; $i < pg_numrows($availableSongs); $i++) { 
+				$row = pg_fetch_array($availableSongs, $i);
+				echo '<option value="'.$row["u_id"].'">'.$row["tytul"].' - '.$row["imie"].' '.$row["nazwisko"].'</option>';
+			}
+
+			echo '			</optgroup>												
+						</select>
+						<label>Songs</label>
+					</div>';
+			if(pg_numrows($myPerformances) >= 3) {
+				echo '<p class="warning"> Maximum of 3 songs can be selected </p>
+				<button type="submit" class="btn" disabled>Add song</button>';
+			}
+			else {
+				echo '<button type="submit" class="btn">Add song</button>';
+			}
+
+			echo '	<div class="text_button">
+						<p><a href="#" class="listOfMyPerformances-link">My performances list</a></p>
+					</div>
+				</form>
+				</div>';
+
+			echo "</div>";
+		}
+		//===================================================================================================================== COMPOSERS
 		if($_SESSION['access_level'] == 2) {
 			echo <<<EOL
 			<div id="composers" class="wrapper">
@@ -115,11 +209,11 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 					<h2>Composers</h2>
 					<div class="scrollable">
 						<table border="1" align=center>
-						<tr>
-							<th>Composer Id</th>
-							<th>Name</th>
-							<th>Surname</th>
-						</tr>
+							<tr>
+								<th>Composer Id</th>
+								<th>Name</th>
+								<th>Surname</th>
+							</tr>
 			EOL;
 
 			for($i=0; $i<pg_numrows($composers); $i++) {
@@ -165,6 +259,7 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 			</div>
 			EOL;
 		}
+		//===================================================================================================================== SONGS
 
 		if($_SESSION['access_level'] == 2) {
 			echo <<<EOL
@@ -239,6 +334,19 @@ $connecting_string = "host=$host dbname=$db_name user=$db_user password=$db_pass
 				</div>';
 
 			echo "</div>";
+		}
+
+		//===================================================================================================================== Settings
+
+		if($_SESSION['access_level'] == 2) {
+			echo <<<EOL
+			<div id="settings" class="wrapper">
+				<span class="icon-close"><ion-icon name="close"></ion-icon></span>
+				<div class="from-box mode1">
+					<h2>Settings</h2>
+				</div>
+			</div>
+			EOL;
 		}
 		?>
 		<script src="home_script.js"></script>
