@@ -4,7 +4,8 @@ btns_names.push({ popup: "composers", open_buttons: ["btnComposers-popup"] });
 btns_names.push({ popup: "songs", open_buttons: ["btnSongs-popup"] });
 btns_names.push({ popup: "myPerformances", open_buttons: ["btnMyPerformances-popup"] });
 btns_names.push({ popup: "settings", open_buttons: ["btnSettings-popup"] });
-
+btns_names.push({ popup: "submissions", open_buttons: ["btnSubmissions-popup"] });
+btns_names.push({ popup: "pianistsScore", open_buttons: ["btnPianistsScore-popup"] });
 
 
 let actualOpenPopup = null;
@@ -54,6 +55,7 @@ modes_names.push({ popup: "songs", change_mode_button: "addNewSong-link", return
 modes_names.push({ popup: "composers", change_mode_button: "addNewComposer-link", return_button: "listOfComposers-link", mode_name: "active" });
 modes_names.push({ popup: "myPerformances", change_mode_button: "addNewPerformance-link", return_button: "listOfMyPerformances-link", mode_name: "active" });
 modes_names.push({ popup: "myPerformances", change_mode_button: "deletePerformance-link", return_button: "listOfMyPerformances2-link", mode_name: "active2" });
+modes_names.push({ popup: "settings", change_mode_button: "changeSettings-link", return_button: "viewSettings-link", mode_name: "active" });
 
 modes_names.forEach(item => {
     // bierzyemy uchwyt do wyskakującego okienka

@@ -17,7 +17,7 @@
     if ( !isset($_POST['selected_ids']) || !is_array($_POST["selected_ids"])) {
         // Could not get the data that should have been sent.
         exit('error values!');
-        header('refresh:3;url= home.php');
+        header('refresh:3;url: home.php');
     }
 
     foreach ($_POST["selected_ids"] as $selected_id) {
@@ -26,11 +26,11 @@
         $result = pg_query($conn, $query);
         
         if ($result) {
-          echo "Usunięto wiersz o ID: $selected_id<br>";
+          echo " Deleted row with ID: $selected_id<br>";
         } else {
-          echo "Błąd podczas usuwania wiersza o ID: $selected_id<br>";
+          echo " Error during deleting row with ID: $selected_id<br>";
         }
-        header('refresh:2;url= home.php');
+        header("Location: home.php");
     }
   
 

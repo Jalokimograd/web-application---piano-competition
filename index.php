@@ -23,7 +23,7 @@ if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin']==true)) {
         <h2 class="logo">Konkurs Pianistyczny</h2>
         <nav class="navigation">
             <a href="#">Home</a>
-            <a href="#">SQL code</a>
+            <a href="./konkurs_pianistyczny.sql">SQL code</a>
             <a id="btnDBSchema-popup" href="#">DB Schema</a>
             <button class="btnLogin-popup">Login</button>
         </nav>
@@ -99,7 +99,7 @@ if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin']==true)) {
 
     <div id="DBSchema-popup" class="wrapper">
         <span id="DBSchemaPopup-close" class="icon-close"><ion-icon name="close"></ion-icon></span>
-        <h2>Login</h2>
+        <img style="width: 100%; height: 100%;" src="Baza_danych_schemat.png" alt="Baza danych">
 
     </div>
 

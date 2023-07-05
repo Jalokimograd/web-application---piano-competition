@@ -10,6 +10,7 @@
     // Check connection
     if (!$conn) {
         die("Connection failed");
+        header('refresh:2;url= index.php');
     }
     echo "Connected successfully";
 
@@ -18,11 +19,13 @@
     if ( !isset($_POST['username'], $_POST['name'], $_POST['surname'], $_POST['email'], $_POST['password']) ) {
         // Could not get the data that should have been sent.
         exit('Please fill both the username and password fields!');
+        header('refresh:2;url= index.php');
     }
 
     if (empty($_POST['username'])|| empty($_POST['name'])|| empty($_POST['surname']) || empty($_POST['password']) || empty($_POST['email'])) {
         // One or more values are empty.
         exit('Please complete the registration form');
+        header('refresh:2;url= index.php');
     }
 
     // Prepare our SQL, preparing the SQL statement will prevent SQL injection.
@@ -33,7 +36,8 @@
 
     if (pg_num_rows($stmt) > 0) {
         // Username already exists
-        echo 'Username exists, please choose another!';
+        echo ' Username exists, please choose another!';
+        header('refresh:2;url= index.php');
     } else {
         $password_hash = password_hash($_POST['password'], PASSWORD_DEFAULT);
         
@@ -42,8 +46,8 @@
         array($_POST['username'], $_POST['name'], $_POST['surname'], $_POST['password'], $password_hash, $_POST['email']));
 
 
-        echo 'You have successfully registered! You can now login!';
-        header('refresh:2;url= index.php');
+        echo ' You have successfully registered! You can now login!';
+        header("refresh:2;url= index.php");
     }
     pg_close($conn);
 ?>

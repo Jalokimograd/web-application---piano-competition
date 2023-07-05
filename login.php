@@ -15,6 +15,7 @@
     // Check connection
     if (!$conn) {
         die("Connection failed");
+        header('refresh:2;url= home.php');
     }
     echo "Connected successfully";
 
@@ -23,6 +24,7 @@
     if ( !isset($_POST['username'], $_POST['password']) ) {
         // Could not get the data that should have been sent.
         exit('Please fill both the username and password fields!');
+        header('refresh:2;url= home.php');
     }
 
     // Prepare our SQL, preparing the SQL statement will prevent SQL injection.
@@ -66,12 +68,12 @@
             header('Location: home.php');
         } else {
             // Incorrect password
-            echo 'Incorrect username and/or password!';
+            echo ' Incorrect username and/or password!';
             header('refresh:2;url= index.php');
         }
     } else {
         // Incorrect username
-        echo 'Incorrect username and/or password!';
+        echo ' Incorrect username and/or password!';
         header('refresh:2;url= index.php');
     }
     pg_close($conn);

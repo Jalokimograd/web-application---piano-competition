@@ -43,7 +43,7 @@
 
 
         echo 'You have successfully add new Song';
-        header('refresh:2;url= home.php');
+        header("Location: home.php");
     }
     pg_close($conn);
 ?>

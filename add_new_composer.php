@@ -35,7 +35,7 @@
 
 
     echo 'You have successfully add new Composer';
-    header('refresh:2;url= home.php');
+    header("Location: home.php");
     
     pg_close($conn);
 ?>
